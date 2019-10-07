@@ -1,0 +1,9 @@
+﻿  Heightmap.cpp
+f:\year 3\rt3d\heightmap\rt3d2019_heightmap\heightmap\heightmap.cpp(69): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+f:\year 3\rt3d\heightmap\rt3d2019_heightmap\heightmap\heightmap.cpp(70): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+f:\year 3\rt3d\heightmap\rt3d2019_heightmap\heightmap\heightmap.cpp(71): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+f:\year 3\rt3d\heightmap\rt3d2019_heightmap\heightmap\heightmap.cpp(72): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+f:\year 3\rt3d\heightmap\rt3d2019_heightmap\heightmap\heightmap.cpp(73): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+f:\year 3\rt3d\heightmap\rt3d2019_heightmap\heightmap\heightmap.cpp(74): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+f:\year 3\rt3d\heightmap\rt3d2019_heightmap\heightmap\heightmap.cpp(253): warning C4389: '!=': signed/unsigned mismatch
+  Heightmap.vcxproj -> F:\Year 3\rt3d\Heightmap\RT3D2019_HeightMap\Debug\Heightmap.exe
