@@ -59,35 +59,40 @@ bool HeightMapApplication::HandleStart()
 	// Clearly this code will need changing to render the heightmap
 	/////////////////////////////////////////////////////////////////
 
-	m_HeightMapVtxCount = ((m_HeightMapWidth - 1) * (m_HeightMapLength - 1)) * 6;
+	m_HeightMapVtxCount = ((m_HeightMapWidth - 1) * (m_HeightMapLength)) * 4; //New size for vertex nums
 	m_pMapVtxs = new Vertex_Pos3fColour4ubNormal3f[m_HeightMapVtxCount];
 
 
 	int vertexNum = 0;
 	for (int i = 0; i < m_HeightMapLength -1 ; i++)
 	{
-		for (int j = 0; j < m_HeightMapWidth -1; j++)
+		for (int j = 0; j < m_HeightMapWidth; j++)
 		{
 			int gridindex = (j + (i*m_HeightMapLength));
-			//DirectX::XMFLOAT3 v1 = DirectX::XMFLOAT3(0 + j ,		m_pHeightMap[i*j].y,								0 + i );
-			//DirectX::XMFLOAT3 v2 = DirectX::XMFLOAT3(0 + j ,		m_pHeightMap[(i*j) + m_HeightMapWidth].y,			10.0f + i);
-			//DirectX::XMFLOAT3 v3 = DirectX::XMFLOAT3(10.0f + j,		m_pHeightMap[(i*j) + 1].y,							0 + i ); 
-			//DirectX::XMFLOAT3 v4 = DirectX::XMFLOAT3(10.0f + j,		m_pHeightMap[(i*j) + 1].y,							0 + i ) ;
-			//DirectX::XMFLOAT3 v5 = DirectX::XMFLOAT3(0 + j ,		m_pHeightMap[(i*j) + m_HeightMapWidth].y,			10.0f + i);
-			//DirectX::XMFLOAT3 v6 = DirectX::XMFLOAT3(10.0f + j,		m_pHeightMap[(i*j) + 1 + m_HeightMapWidth].y,		10 + i);
+
 
 			DirectX::XMFLOAT3 v1 = m_pHeightMap[gridindex];
-			DirectX::XMFLOAT3 v2 = m_pHeightMap[gridindex + 1 ];
+			DirectX::XMFLOAT3 v2 = m_pHeightMap[gridindex + m_HeightMapWidth];
+			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v1, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
+			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v2, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
+			if (j == m_HeightMapLength - 1) {
+				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v2, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
+				DirectX::XMFLOAT3 v3 = m_pHeightMap[gridindex + m_HeightMapWidth - (m_HeightMapLength -1) ];
+				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v3, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
+				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v3, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
+			}
+			
+
+			
+
+
+
+			/* Triangle List
+			
 			DirectX::XMFLOAT3 v3 = m_pHeightMap[(gridindex +m_HeightMapWidth)];
 			DirectX::XMFLOAT3 v4 = m_pHeightMap[(gridindex + m_HeightMapWidth + 1)];
 			DirectX::XMFLOAT3 v5 = m_pHeightMap[(gridindex + m_HeightMapWidth)];
 			DirectX::XMFLOAT3 v6 = m_pHeightMap[(gridindex  + 1)];
-
-			
-			
-			//DirectX::XMFLOAT3 v4 = m_pHeightMap[vertexNum + m_HeightMapWidth + 1];
-			//DirectX::XMFLOAT3 v5 = m_pHeightMap[];
-			//DirectX::XMFLOAT3 v6 = m_pHeightMap[];
 
  			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v1,MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
 			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v2, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
@@ -95,9 +100,7 @@ bool HeightMapApplication::HandleStart()
 			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v4, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
 			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v5, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
 			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v6, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-			//m_pMapVtxs[vertexNum + m_HeightMapWidth + 1] = Vertex_Pos3fColour4ubNormal3f(v4, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-			//m_pMapVtxs[vertexNum + 1] = Vertex_Pos3fColour4ubNormal3f(v5, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-			//m_pMapVtxs[vertexNum + m_HeightMapWidth + 1] = Vertex_Pos3fColour4ubNormal3f(v6, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
+			Triangle List */
 
 		}
 
@@ -212,7 +215,7 @@ void HeightMapApplication::HandleRender()
 
 	this->Clear(XMFLOAT4(.2f, .2f, .6f, 1.f));
 
-	this->DrawUntexturedLit(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, m_pHeightMapBuffer, NULL, m_HeightMapVtxCount);
+	this->DrawUntexturedLit(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP, m_pHeightMapBuffer, NULL, m_HeightMapVtxCount);
 }
 
 //////////////////////////////////////////////////////////////////////
