@@ -70,88 +70,34 @@ bool HeightMapApplication::HandleStart()
 		{
 			int gridindex = (j + (i*m_HeightMapLength));
 
+			//Grab vectors
+			XMVECTOR origin = XMLoadFloat3(&m_pHeightMap[gridindex]);
+			XMVECTOR originDown = XMLoadFloat3(&m_pHeightMap[gridindex + m_HeightMapWidth]);
+			XMVECTOR originRight = XMLoadFloat3(&m_pHeightMap[gridindex + 1]);
+			//calculate normal
+			XMVECTOR triangleNormal = XMVector3Normalize(XMVector3Cross(originDown - origin, originRight - originDown));
+			//store back as floats
+			XMFLOAT3 v1, v2, v3,norm1, norm2;
+			XMStoreFloat3(&v1, origin);
+			XMStoreFloat3(&v2, originDown);
+			XMStoreFloat3(&v3, originRight);
+			XMStoreFloat3(&norm1, triangleNormal);
 
-			DirectX::XMFLOAT3 v1 = m_pHeightMap[gridindex];
-			DirectX::XMFLOAT3 v2 = m_pHeightMap[gridindex + m_HeightMapWidth];
-			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v1, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v2, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
+			//Store the top and bottom vertex for each loop
+			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v1, MAP_COLOUR, norm1);
+			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v2, MAP_COLOUR, norm1);
+			//If we are the final column, make a degenerative triangle going down at the very end
 			if (j == m_HeightMapLength - 1) {
-				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v2, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
+				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v2, MAP_COLOUR, norm1);
 				DirectX::XMFLOAT3 v3 = m_pHeightMap[gridindex + m_HeightMapWidth - (m_HeightMapLength -1) ];
-				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v3, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v3, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
+				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v3, MAP_COLOUR, norm1);
+				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v3, MAP_COLOUR, norm1);
 			}
 			
-
-			
-
-
-
-			/* Triangle List
-			
-			DirectX::XMFLOAT3 v3 = m_pHeightMap[(gridindex +m_HeightMapWidth)];
-			DirectX::XMFLOAT3 v4 = m_pHeightMap[(gridindex + m_HeightMapWidth + 1)];
-			DirectX::XMFLOAT3 v5 = m_pHeightMap[(gridindex + m_HeightMapWidth)];
-			DirectX::XMFLOAT3 v6 = m_pHeightMap[(gridindex  + 1)];
-
- 			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v1,MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v2, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v3, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v4, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v5, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v6, MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-			Triangle List */
 
 		}
 
 	}
-
-	
-	/*
-	// Side 5 - Top face
-	m_pMapVtxs[24] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 10.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-	m_pMapVtxs[25] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 10.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-	m_pMapVtxs[26] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 10.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-	m_pMapVtxs[27] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 10.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-	m_pMapVtxs[28] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 10.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-	m_pMapVtxs[29] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 10.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, 1.0f, 0.0f));
-	// Side 1 - Front face
-	m_pMapVtxs[0] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 0.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, -1.0f));
-	m_pMapVtxs[1] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 10.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, -1.0f));
-	m_pMapVtxs[2] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 0.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, -1.0f));
-	m_pMapVtxs[3] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 0.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, -1.0f));
-	m_pMapVtxs[4] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 10.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, -1.0f));
-	m_pMapVtxs[5] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 10.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, -1.0f));
-	// Side 2 - Right face
-	m_pMapVtxs[6] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 0.0f, 0.0f), MAP_COLOUR, XMFLOAT3(1.0f, 0.0f, 0.0f));
-	m_pMapVtxs[7] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 10.0f, 0.0f), MAP_COLOUR, XMFLOAT3(1.0f, 0.0f, 0.0f));
-	m_pMapVtxs[8] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 0.0f, 10.0f), MAP_COLOUR, XMFLOAT3(1.0f, 0.0f, 0.0f));
-	m_pMapVtxs[9] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 0.0f, 10.0f), MAP_COLOUR, XMFLOAT3(1.0f, 0.0f, 0.0f));
-	m_pMapVtxs[10] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 10.0f, 0.0f), MAP_COLOUR, XMFLOAT3(1.0f, 0.0f, 0.0f));
-	m_pMapVtxs[11] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 10.0f, 10.0f), MAP_COLOUR, XMFLOAT3(1.0f, 0.0f, 0.0f));
-	// Side 3 - Rear face
-	m_pMapVtxs[12] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 0.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, 1.0f));
-	m_pMapVtxs[13] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 10.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, 1.0f));
-	m_pMapVtxs[14] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 0.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, 1.0f));
-	m_pMapVtxs[15] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 0.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, 1.0f));
-	m_pMapVtxs[16] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 10.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, 1.0f));
-	m_pMapVtxs[17] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 10.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, 0.0f, 1.0f));
-	// Side 4 - Left face
-	m_pMapVtxs[18] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 0.0f, 0.0f), MAP_COLOUR, XMFLOAT3(-1.0f, 0.0f, 0.0f));
-	m_pMapVtxs[19] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 10.0f, 10.0f), MAP_COLOUR, XMFLOAT3(-1.0f, 0.0f, 0.0f));
-	m_pMapVtxs[20] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 10.0f, 0.0f), MAP_COLOUR, XMFLOAT3(-1.0f, 0.0f, 0.0f));
-	m_pMapVtxs[21] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 0.0f, 0.0f), MAP_COLOUR, XMFLOAT3(-1.0f, 0.0f, 0.0f));
-	m_pMapVtxs[22] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 0.0f, 10.0f), MAP_COLOUR, XMFLOAT3(-1.0f, 0.0f, 0.0f));
-	m_pMapVtxs[23] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 10.0f, 10.0f), MAP_COLOUR, XMFLOAT3(-1.0f, 0.0f, 0.0f));
-	
-	// Side 6 - Bottom face
-	m_pMapVtxs[30] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 0.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, -1.0f, 0.0f));
-	m_pMapVtxs[31] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 0.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, -1.0f, 0.0f));
-	m_pMapVtxs[32] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 0.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, -1.0f, 0.0f));
-	m_pMapVtxs[33] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 0.0f, 0.0f), MAP_COLOUR, XMFLOAT3(0.0f, -1.0f, 0.0f));
-	m_pMapVtxs[34] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(10.0f, 0.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, -1.0f, 0.0f));
-	m_pMapVtxs[35] = Vertex_Pos3fColour4ubNormal3f(XMFLOAT3(0.0f, 0.0f, 10.0f), MAP_COLOUR, XMFLOAT3(0.0f, -1.0f, 0.0f));
-	*/
 
 	/////////////////////////////////////////////////////////////////
 	// Down to here
