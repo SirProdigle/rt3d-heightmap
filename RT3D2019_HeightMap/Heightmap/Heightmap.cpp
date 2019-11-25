@@ -61,7 +61,7 @@ bool HeightMapApplication::HandleStart()
 
 	m_HeightMapVtxCount = ((m_HeightMapWidth - 1) * (m_HeightMapLength)) * 4; //New size for vertex nums
 	m_pMapVtxs = new Vertex_Pos3fColour4ubNormal3f[m_HeightMapVtxCount];
-
+	XMFLOAT3* bottomNormals  = new XMFLOAT3[m_HeightMapLength];
 
 	int vertexNum = 0;
 	for (int i = 0; i < m_HeightMapLength -1 ; i++)
@@ -74,8 +74,15 @@ bool HeightMapApplication::HandleStart()
 			XMVECTOR origin = XMLoadFloat3(&m_pHeightMap[gridindex]);
 			XMVECTOR originDown = XMLoadFloat3(&m_pHeightMap[gridindex + m_HeightMapWidth]);
 			XMVECTOR originRight = XMLoadFloat3(&m_pHeightMap[gridindex + 1]);
+			XMVECTOR originLeft = XMLoadFloat3(&m_pHeightMap[gridindex + -1]);
 			//calculate normal
-			XMVECTOR triangleNormal = XMVector3Normalize(XMVector3Cross(originDown - origin, originRight - originDown));
+			XMVECTOR triangleNormal;
+			if(j != m_HeightMapWidth -1 )
+				triangleNormal = XMVector3Normalize(XMVector3Cross(originDown - origin, originRight - originDown));
+			else {
+				XMVECTOR originUp = XMLoadFloat3(&m_pHeightMap[gridindex - m_HeightMapWidth]);
+				triangleNormal = XMVector3Normalize(XMVector3Cross(originUp - origin, originLeft - originUp));
+			}
 			//store back as floats
 			XMFLOAT3 v1, v2, v3,norm1, norm2;
 			XMStoreFloat3(&v1, origin);
@@ -84,7 +91,14 @@ bool HeightMapApplication::HandleStart()
 			XMStoreFloat3(&norm1, triangleNormal);
 
 			//Store the top and bottom vertex for each loop
-			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v1, MAP_COLOUR, norm1);
+			if (i != 0) {
+				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v1, MAP_COLOUR, bottomNormals[j]);
+			}
+			else {
+				m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v1, MAP_COLOUR,norm1);
+			}
+			bottomNormals[j] = norm1;
+			//m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v1, MAP_COLOUR, norm1);
 			m_pMapVtxs[vertexNum++] = Vertex_Pos3fColour4ubNormal3f(v2, MAP_COLOUR, norm1);
 			//If we are the final column, make a degenerative triangle going down at the very end
 			if (j == m_HeightMapLength - 1) {
@@ -104,8 +118,8 @@ bool HeightMapApplication::HandleStart()
 	/////////////////////////////////////////////////////////////////
 
 	m_pHeightMapBuffer = CreateImmutableVertexBuffer(m_pD3DDevice, sizeof Vertex_Pos3fColour4ubNormal3f * m_HeightMapVtxCount, m_pMapVtxs);
-
-	delete m_pMapVtxs;
+	delete[] bottomNormals;
+	delete[] m_pMapVtxs;
 
 	return true;
 }
